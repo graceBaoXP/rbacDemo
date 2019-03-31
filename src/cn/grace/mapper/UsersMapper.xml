@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.grace.mapper.UsersMapper">
+
+    <resultMap id="userMapper" type="cn.grace.pojo.Users">
+        <id property="username" column="username"></id>
+        <result property="userpwd" column="userpwd"></result>
+        <!--配置关联对象Roles -->
+        <association property="roles" javaType="cn.grace.pojo.Roles">
+            <id property="roleid" column="roleid"></id>
+            <result property="rolename" column="rolename"></result>
+        </association>
+        <!--配置关联对象menus -->
+        <collection property="menus" ofType="cn.grace.pojo.Menus">
+        <id property="menuid" column="menuid"></id>
+        <result property="menuname" column="menuname"></result>
+        <result property="menuurl" column="menuurl"></result>
+        <result property="fatherid" column="fatherid"></result>
+        </collection>
+        <!--配置关联对象funs -->
+        <collection property="funs" ofType="cn.grace.pojo.Funs">
+            <id property="funid" column="funid"></id>
+            <result property="funname" column="funname"></result>
+            <result property="funurl" column="funurl"></result>
+        </collection>
+    </resultMap>
+
+    <select id="selectUserByName" parameterType="java.lang.String" resultMap="userMapper">
+      SELECT
+	    *
+     FROM
+	users u,
+	roles r,
+	roles_menus rm,
+	menus m left join funs f on m.menuid=f.menu_id
+    WHERE
+	u.role_id = r.roleid
+  AND r.roleid = rm.roles_id
+  AND rm.menus_id = m.menuid
+
+  AND u.username =#{username}
+    </select>
+
+</mapper>
